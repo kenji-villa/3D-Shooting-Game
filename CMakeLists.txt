@@ -11,6 +11,13 @@ find_package(OpenGL REQUIRED)
 
 add_executable(ShootingGame
     src/main.cpp
+    src/Camera.cpp
+    src/Room.cpp
+    src/Target.cpp
+    src/Projectile.cpp
+    src/GameState.cpp
+    src/Renderer.cpp
+    src/Input.cpp
 )
 
 target_include_directories(ShootingGame PRIVATE
@@ -24,6 +31,7 @@ target_link_directories(ShootingGame PRIVATE
 target_link_libraries(ShootingGame PRIVATE
     freeglut
     OpenGL::GL
+    OpenGL::GLU
 )
 
 add_custom_command(TARGET ShootingGame POST_BUILD
