@@ -18,6 +18,7 @@ add_executable(ShootingGame
     src/GameState.cpp
     src/Renderer.cpp
     src/Input.cpp
+    src/Hud.cpp
 )
 
 target_include_directories(ShootingGame PRIVATE

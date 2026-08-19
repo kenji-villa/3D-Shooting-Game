@@ -1,9 +1,11 @@
-// src/main.cpp
 #include <GL/freeglut.h>
 #include "Globals.h"
 #include "Renderer.h"
 #include "Input.h"
 #include "Room.h"
+#include "Hud.h"
+#include <cstdlib>
+#include <ctime>
 
 // ---- Global game state (declared extern in Globals.h) ----
 Camera g_camera;
@@ -22,6 +24,7 @@ void display() {
 
     camera_apply(g_camera);
     renderer_draw_scene(g_target, g_projectile);
+    hud_draw(g_gameState.score, g_windowWidth, g_windowHeight);
 
     glutSwapBuffers();
 }
@@ -48,6 +51,8 @@ void reshape(int w, int h) {
 }
 
 int main(int argc, char** argv) {
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(g_windowWidth, g_windowHeight);
@@ -70,6 +75,7 @@ int main(int argc, char** argv) {
     glutIdleFunc(idle);
     glutReshapeFunc(reshape);
     glutPassiveMotionFunc(input_passive_motion);
+    glutMouseFunc(input_mouse);
     glutKeyboardUpFunc(input_key_up);
 
     glutSetCursor(GLUT_CURSOR_NONE);

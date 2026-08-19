@@ -39,7 +39,10 @@ void gamestate_update(GameState& gs, Projectile& proj, Target& target, float del
     } else if (gs.mode == GameMode::HitStop) {
         gs.hitStopTimer -= deltaTime;
         if (gs.hitStopTimer <= 0.0f) {
-            if (!target.alive) target.alive = true; // respawn for next round
+            if (!target.alive) {
+                target_randomize_position(target); // move it before it reappears
+                target.alive = true;
+            }
             gs.mode = GameMode::Aiming;
         }
     }
