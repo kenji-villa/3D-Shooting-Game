@@ -24,7 +24,7 @@ struct Vec3 {
 
     Vec3 normalized() const {
         float len = length();
-        if (len < 1e-6f) return Vec3(0, 0, 0); 
+        if (len < 1e-6f) return Vec3(0, 0, 0); // avoid divide-by-zero
         return Vec3(x / len, y / len, z / len);
     }
 };
