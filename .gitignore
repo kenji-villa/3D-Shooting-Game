@@ -1,0 +1,20 @@
+# CMake build directory
+build/
+
+# Compiled files
+*.exe
+*.dll
+*.o
+*.obj
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+Makefile
+compile_commands.json
+
+# System files
+.DS_Store
+Thumbs.db
