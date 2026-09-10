@@ -117,6 +117,3 @@ Ideas for future iterations, not yet implemented:
 - [ ] Per-level environment themes (different wall/floor textures, room layouts)
 - [ ] Mipmapped texture filtering (currently bilinear-only — see `DOCUMENTATION.md` for why)
 
-## License
-
-*(Add your license here — e.g., MIT.)*
