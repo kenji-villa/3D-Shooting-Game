@@ -1,3 +1,4 @@
+// src/Projectile.cpp
 #include "Projectile.h"
 #include "Room.h"
 #include <GL/freeglut.h>
@@ -19,16 +20,40 @@ namespace {
         p.position += p.velocity * dt;
         p.spin += 180.0f * dt; // tumbles slower than a bullet
     }
+
+    // Rotates the current modelview so local +Z (the axis gluCylinder/gluCone
+    // extrude along) points along the given direction. Without this, an
+    // elongated model always faces world +Z regardless of which way it's
+    // actually travelling — from most viewing angles that looks like it's
+    // tumbling sideways rather than flying nose-first.
+    void apply_direction_rotation(const Vec3& velocity) {
+        Vec3 dir = velocity.normalized();
+        if (dir.length() < 1e-5f) return; // no meaningful direction to align to
+
+        Vec3 zAxis(0.0f, 0.0f, 1.0f);
+        float d = zAxis.dot(dir);
+        Vec3 axis = zAxis.cross(dir);
+        float axisLen = axis.length();
+
+        if (d < -0.9999f) {
+            // Pointing exactly backward — 180 degrees about any perpendicular axis works.
+            glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
+        } else if (axisLen > 1e-5f) {
+            float clampedD = d < -1.0f ? -1.0f : (d > 1.0f ? 1.0f : d);
+            float angleDeg = std::acos(clampedD) * (180.0f / PI);
+            glRotatef(angleDeg, axis.x, axis.y, axis.z);
+        }
+        // else dir is already ~= +Z, no rotation needed
+    }
 }
 
-void projectile_fire(Projectile& p, ProjectileType type, Vec3 startPos, float yawDegrees) {
+void projectile_fire(Projectile& p, ProjectileType type, Vec3 startPos, Vec3 direction) {
     p.type = type;
     p.position = startPos;
     p.spin = 0.0f;
     p.active = true;
 
-    float rad = yawDegrees * TO_RAD;
-    Vec3 dir(std::sin(rad), 0.0f, -std::cos(rad)); // matches Camera's aim direction
+    Vec3 dir = direction.normalized();
 
     if (type == ProjectileType::Bullet) {
         p.velocity = dir * BULLET_SPEED;
@@ -63,13 +88,32 @@ void projectile_draw(const Projectile& p) {
 
     glPushMatrix();
     glTranslatef(p.position.x, p.position.y, p.position.z);
-    glRotatef(p.spin, 0.0f, 0.0f, 1.0f);
 
     GLUquadric* quad = gluNewQuadric();
 
     if (p.type == ProjectileType::Bullet) {
-        glColor3f(0.4f, 0.4f, 0.4f);
-        gluCylinder(quad, PROJECTILE_RADIUS, PROJECTILE_RADIUS * 0.4f, 4.0f, 16, 4);
+        apply_direction_rotation(p.velocity); // point the model where it's actually flying
+        glRotatef(p.spin, 0.0f, 0.0f, 1.0f);   // roll around its own long axis
+
+        constexpr float BODY_LENGTH = 4.0f;
+        constexpr float NOSE_LENGTH = 2.5f;
+
+        // Brass casing (blunt rear section)
+        glColor3f(0.70f, 0.55f, 0.20f);
+        gluCylinder(quad, PROJECTILE_RADIUS, PROJECTILE_RADIUS, BODY_LENGTH, 12, 1);
+
+        // Flat base cap so the rear isn't hollow when seen from behind
+        glPushMatrix();
+        glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+        gluDisk(quad, 0.0, PROJECTILE_RADIUS, 12, 1);
+        glPopMatrix();
+
+        // Copper pointed nose — tapers almost to a point, like a real ogive tip
+        glPushMatrix();
+        glTranslatef(0.0f, 0.0f, BODY_LENGTH);
+        glColor3f(0.80f, 0.47f, 0.25f);
+        gluCylinder(quad, PROJECTILE_RADIUS, PROJECTILE_RADIUS * 0.08f, NOSE_LENGTH, 12, 4);
+        glPopMatrix();
     } else {
         glColor3f(0.1f, 0.4f, 0.15f);
         glutSolidSphere(PROJECTILE_RADIUS, 16, 16);

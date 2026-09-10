@@ -1,3 +1,4 @@
+// src/Renderer.cpp
 #include "Renderer.h"
 #include "Room.h"
 #include <GL/freeglut.h>
@@ -14,8 +15,8 @@ void renderer_setup_lights() {
     glLightfv(GL_LIGHT0, GL_POSITION, position);
 }
 
-void renderer_draw_scene(const Target& target, const Projectile& proj) {
-    room_draw();
+void renderer_draw_scene(const Target& target, const Projectile& proj, unsigned int floorTextureId, unsigned int wallTextureId) {
+    room_draw(floorTextureId, wallTextureId);
     target_draw(target);
     projectile_draw(proj);
 }

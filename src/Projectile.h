@@ -1,3 +1,4 @@
+// src/Projectile.h
 #pragma once
 #include "Types.h"
 
@@ -14,7 +15,7 @@ struct Projectile {
 // radius used for collision against the target/walls
 constexpr float PROJECTILE_RADIUS = 1.5f;
 
-void projectile_fire(Projectile& p, ProjectileType type, Vec3 startPos, float yawDegrees);
+void projectile_fire(Projectile& p, ProjectileType type, Vec3 startPos, Vec3 direction);
 void projectile_update(Projectile& p, float deltaTime);
 void projectile_draw(const Projectile& p);
 bool projectile_hit_wall(const Projectile& p);
