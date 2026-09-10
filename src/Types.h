@@ -27,4 +27,10 @@ struct Vec3 {
         if (len < 1e-6f) return Vec3(0, 0, 0); // avoid divide-by-zero
         return Vec3(x / len, y / len, z / len);
     }
+
+    float dot(const Vec3& o) const { return x * o.x + y * o.y + z * o.z; }
+
+    Vec3 cross(const Vec3& o) const {
+        return Vec3(y * o.z - z * o.y, z * o.x - x * o.z, x * o.y - y * o.x);
+    }
 };
