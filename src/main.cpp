@@ -4,6 +4,8 @@
 #include "Input.h"
 #include "Room.h"
 #include "Hud.h"
+#include "Texture.h"
+#include "Audio.h"
 #include <cstdlib>
 #include <ctime>
 
@@ -14,6 +16,8 @@ Projectile g_projectile;
 GameState g_gameState;
 int g_windowWidth = 1080;
 int g_windowHeight = 720;
+static unsigned int g_floorTextureId = 0;
+static unsigned int g_wallTextureId = 0;
 
 static int g_lastTimeMs = 0;
 
@@ -23,8 +27,8 @@ void display() {
     glLoadIdentity();
 
     camera_apply(g_camera);
-    renderer_draw_scene(g_target, g_projectile);
-    hud_draw(g_gameState.score, g_windowWidth, g_windowHeight);
+    renderer_draw_scene(g_target, g_projectile, g_floorTextureId, g_wallTextureId);
+    hud_draw(g_gameState, g_windowWidth, g_windowHeight);
 
     glutSwapBuffers();
 }
@@ -67,8 +71,16 @@ int main(int argc, char** argv) {
 
     renderer_setup_lights();
 
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glDisable(GL_TEXTURE_2D); // re-enabled per-draw only where needed (the floor)
+
+    g_floorTextureId = texture_load("assets/Brick_02.png");
+    g_wallTextureId = texture_load("assets/Brick_03.png");
+    audio_init();
+
     camera_init(g_camera, Vec3(0.0f, 15.0f, ROOM_NEAR_Z), Vec3(0.0f, 1.0f, 0.0f), 100.0f);
-    target_init(g_target, Vec3(0.0f, 15.0f, -30.0f), 5.0f);
+    target_init(g_target, Vec3(0.0f, 15.0f, -30.0f), 6.0f);
     gamestate_reset(g_gameState, g_target);
 
     glutDisplayFunc(display);
