@@ -1,3 +1,4 @@
+// src/Target.h
 #pragma once
 #include "Types.h"
 
@@ -10,4 +11,5 @@ struct Target {
 void target_init(Target& t, Vec3 position, float radius);
 void target_randomize_position(Target& t);
 void target_draw(const Target& t);
-bool target_check_hit(const Target& t, const Vec3& projectilePos, float projectileRadius);
+// Returns points scored: 0 = miss, 1 (outer white) through 5 (gold bullseye).
+int target_check_hit(const Target& t, const Vec3& projectilePos, float projectileRadius);
